@@ -32,11 +32,7 @@ HRESULT STDMETHODCALLTYPE hkEndScene(IDirect3DDevice9* vDevice)
 
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		ImVec4 mainColorHovered = ImVec4(0.211f + 0.1f, 0.211f + 0.1f, 0.211f + 0.1f, 1.f);
-		ImVec4 mainColorActive = ImVec4(0.211f + 0.2f, 0.211f + 0.2f, 0.211f + 0.2f, 1.f);
-		ImVec4 menubarColor = ImVec4(0.211f, 0.2119f, 0.211f, 1.f - 0.8f);
-		ImVec4 frameBgColor = ImVec4(0.211f, 0.211f, 0.211f, 1.f + .1f);
-		ImVec4 tooltipBgColor = ImVec4(0.211f, 0.211f, 0.211f, 1.f + .05f);
+		
 
 		style.WindowPadding = ImVec2(10, 10);
 		style.WindowRounding = 0.0f;
