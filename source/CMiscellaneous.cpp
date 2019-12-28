@@ -79,6 +79,7 @@ void gMiscellaneous::OptimizeNetworking()
 
 bool gMiscellaneous::IsVisible(void* pLocal, void* pEntity, Vector vStart, Vector vEnd)
 {
+	//this just kills your fps.
 	trace_t Trace;
 	Ray_t Ray;	
 	CTraceFilter Filter;
