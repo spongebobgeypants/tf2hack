@@ -25,5 +25,5 @@ void Font::Create()
 
 	gInts.Surface->SetFontGlyphSet(MenuText, "Tahoma", 11, 500, 0, 0, FONTFLAG_OUTLINE);
 	gInts.Surface->SetFontGlyphSet(ESP, "Arial", 12, 700, 0, 0, FONTFLAG_DROPSHADOW);
-	gInts.Surface->SetFontGlyphSet(Name, "Tahoma", 12, 700, 0, 0, FONTFLAG_DROPSHADOW);
+	gInts.Surface->SetFontGlyphSet(Name, "Tahoma", 12, 700, 0, 0, FONTFLAG_DROPSHADOW); // OMG GAMSNENSE
 }
