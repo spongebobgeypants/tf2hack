@@ -24,6 +24,10 @@
 // This code is public domain but credits (to Casual_Hacker on www.unknowncheats.me) are always appreciated.
 
 #include <cassert>
+#include <assert.h>
+#include <string>
+#include <mutex>
+#include <unordered_map>
 
 namespace toolkit
 {
@@ -488,3 +492,5 @@ namespace toolkit
 
 
 }
+
+

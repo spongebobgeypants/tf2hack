@@ -191,7 +191,7 @@ void gVisuals::RunPlayerVisuals(CBaseEntity* pPlayerEntity)
 
 		auto iCond = pPlayerEntity->GetCond();
 		auto iClass = pPlayerEntity->GetClassNum();
-		auto iUbercharge = pPlayerEntity->GetUberChargeLevel();
+		auto iUbercharge = pPlayerEntity->GetActiveWeapon()->GetUberChargeLevel();
 		std::string strUber = "Ubercharge: " + std::to_string((iUbercharge * 100)) + "%"; // Hopefully it prints "Ubercharge x %)
 
 		if (iCond & TFCond_Ubercharged) // ubercharge is the first one to get drawn because i think its the most important one
@@ -218,9 +218,9 @@ void gVisuals::RunPlayerVisuals(CBaseEntity* pPlayerEntity)
 		{
 			if (iUbercharge > 0) // we dont wanna draw when enemy has no uber.
 			{
-				//long story short this might work but i am doing it wrong. it should be weapon + netvar or something, not entity + netvar. oh well.
-				gDrawManager.DrawString(x + w + 2, y + iY + 8, clrBoneCol, Font::Get().Name, strUber.c_str());
-				iY += gDrawManager.GetESPHeight();
+				 //long story short this might work but i am doing it wrong. it should be weapon + netvar or something, not entity + netvar. oh well.
+			    //gDrawManager.DrawString(x + w + 2, y + iY + 8, clrBoneCol, Font::Get().Name, strUber.c_str());
+			   //iY += gDrawManager.GetESPHeight();
 			}
 		}
 		
@@ -255,8 +255,7 @@ void gVisuals::ShowSniperDamage()
 		return;
 	}
 	
-	auto iSniperDamage = g::g_LocalPlayer->GetSniperRifleChargeDamage();
-
+	auto iSniperDamage = g::g_LocalPlayer->GetActiveWeapon()->GetSniperRifleChargeDamage();
 
 	Color clrDamage = Color(255, 255, 255, 255);
 
@@ -274,7 +273,10 @@ void gVisuals::ShowSniperDamage()
 		iScreenX = iScreenX / 2;
 		iScreenY = iScreenY / 2;
 
+		auto iFinalDamageHead = 150 + iSniperDamage; // scoped headshots do 150 damage.
+		auto iFinalDamageBody = iSniperDamage;
 		
+
 		gDrawManager.DrawString(iScreenX - 3, iScreenY + 3, clrDamage, Font::Get().ESP, "%d", iSniperDamage); // draw how much damage we can do.
 	}
 }
@@ -282,23 +284,24 @@ void gVisuals::ShowSniperDamage()
 
 void gVisuals::DoGlow(CBaseEntity* pPlayerEntity)
 {
-	if (pPlayerEntity == NULL || pPlayerEntity->IsDormant() || pPlayerEntity->GetLifeState() != LIFE_ALIVE || pPlayerEntity == g::g_LocalPlayer || !gMenu::Visuals::Glow)
+	if (pPlayerEntity == NULL || pPlayerEntity->IsDormant() || pPlayerEntity->GetLifeState() != LIFE_ALIVE || pPlayerEntity == g::g_LocalPlayer)
 	{
 		// we dont want to do glow on these people.
 		pPlayerEntity->GlowEnabled() = false;
 		pPlayerEntity->DestroyGlowEffect();
-
  		return;
 	}
 
-	pPlayerEntity->GlowEnabled() = true;
 	pPlayerEntity->UpdateGlowEffect();
+	pPlayerEntity->GlowEnabled() = true;
 
 	//sometimes works, sometimes doesnt. just tf2 issue because it happens in pastebox too ( lmaopaste )
 }
 
 void gVisuals::DoSkeleton(CBaseEntity* pPlayerEntity)
 {
+
+
 	static int iLeftArmBones[] = { 8, 7, 6, 4 };
 	static int iRightArmBones[] = { 11, 10, 9, 4 };
 	static int iHeadBones[] = { 0, 4, 1 };

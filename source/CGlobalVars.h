@@ -14,8 +14,3 @@ public:
 	char chName[34];
 };
 
-class COffsets
-{
-public:
-	int iCreateMoveOffset = 21, iPaintTraverseOffset = 41, iFrameStageNotifyOffset;
-};

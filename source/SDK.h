@@ -21,8 +21,10 @@
 #include <d3dx9.h>
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
-#include "VMT.h"
 #include "ConVar.h"
+#include "CSignature.h"
+#include "CUtlVector.h"
+#include "CNetvarManager.h"
 
 using namespace std;
 
@@ -39,6 +41,7 @@ typedef void* (*CreateInterfaceFn)(const char *pName, int *pReturnCode);
 typedef float matrix3x4[3][4];
 class CGameTrace;
 typedef CGameTrace trace_t;
+class CBaseCombatWeapon;
 
 #define me gInts.Engine->GetLocalPlayer()
 #define GetBaseEntity gInts.EntList->GetClientEntity
@@ -230,11 +233,9 @@ public:
 
 	Vector GetCollideableMins();
 	Vector GetCollideableMaxs();
+	int & GetTickBase();
 	Vector GetEyePosition();
 	Vector GetOrigin();
-	float GetUberChargeLevel();
-	int GetUberCharge();
-	float GetSniperRifleChargeDamage();
 	int GetHealth();
 	float GetSimulationTime();
 	int GetTeamNum();
@@ -248,8 +249,165 @@ public:
 	bool & GlowEnabled();
 	void SetGlow(bool value);
 	void SetAbsOrigin(const Vector & v);
+	CBaseCombatWeapon* GetActiveWeapon();
 	Vector GetHitboxPosition(int iHitbox);
 };
+
+class CAttribute
+{
+public:
+	void *pad;
+	uint16_t m_iAttributeDefinitionIndex;
+	float m_flValue;
+	unsigned int dpad;
+
+	inline CAttribute(uint16_t iAttributeDefinitionIndex, float flValue)
+	{
+		m_iAttributeDefinitionIndex = iAttributeDefinitionIndex;
+		m_flValue = flValue;
+	}
+};
+
+class CAttributeList
+{
+public:
+	void *pad;
+	CUtlVector<CAttribute, CUtlMemory<CAttribute> > m_Attributes;
+
+	inline void AddAttribute(int iIndex, float flValue)
+	{
+		//15 = MAX_ATTRIBUTES
+		if (m_Attributes.Count() > 14)
+			return;
+
+		CAttribute attr(iIndex, flValue);
+
+		m_Attributes.AddToTail(attr);
+	}
+};
+
+class CBaseCombatWeapon : public CBaseEntity, public CAttributeList
+{
+public:
+	int GetMaxClip1()
+	{
+		typedef int(__thiscall * OriginalFn)(PVOID);
+		return getvfunc<OriginalFn>(this, 318)(this);
+	}
+
+	int GetMaxClip2()
+	{
+		typedef int(__thiscall * OriginalFn)(PVOID);
+		return getvfunc<OriginalFn>(this, 319)(this);
+	}
+
+	int GetSlot()
+	{
+		typedef int(__thiscall *OriginalFn)(PVOID);
+		return getvfunc<OriginalFn>(this, 327)(this);
+	}
+
+	char *GetName()
+	{
+		typedef char *(__thiscall * OriginalFn)(PVOID);
+		return getvfunc<OriginalFn>(this, 329)(this);
+	}
+
+	char *GetPrintName()
+	{
+		typedef char *(__thiscall * OriginalFn)(PVOID);
+		return getvfunc<OriginalFn>(this, 330)(this);
+	}
+
+	float GetSniperRifleChargeDamage()
+	{
+		NETVAR_RETURN(float, this, "DT_TFSniperRifle", "SniperRifleLocalData", "m_flChargedDamage");
+	}
+
+	float GetUberChargeLevel()
+	{
+		NETVAR_RETURN(float, this, "DT_WeaponMedigun", "NonLocalTFWeaponMedigunData", "m_flChargeLevel"); 
+	}
+
+	int* GetItemDefinitionIndex()
+	{
+		NETVAR_RETURN(int*, this, "DT_EconEntity", "m_AttributeManager", "m_Item", "m_iItemDefinitionIndex");
+	}
+
+	//Probably wrong.
+	CAttributeList* GetAttributeList()
+	{
+		NETVAR_RETURN(CAttributeList*, this, "DT_BasePlayer ", "m_AttributeList");
+	}
+
+	CAttribute* GetAttribute()
+	{
+		NETVAR_RETURN(CAttribute*, this, "DT_AttributeList", "m_Attributes");
+	}
+};
+
+
+
+class C_TFGameRules
+{
+public:
+	//credits: blackfire62
+
+	//Are we playing casual?
+	bool IsMatchTypeCasual()
+	{
+		typedef bool(__thiscall* IsCasualFn)(void*);
+		static IsCasualFn IsCasual = (IsCasualFn)(gSignatures.FindPatternEx("client.dll", "55 8B EC 51 56 6A 00 8B F1 E8 ? ? ? ? 8B C8 E8 ? ? ? ? 84 C0 74 0B 8B 86 ? ? ? ? 89 45 FC EB 07 C7 45 ? ? ? ? ? 8D 45 FC 50 E8 ? ? ? ? 83 C4 04 5E 85 C0 74 0B 83 78 28 03"));
+		return IsCasual(this);
+	}
+
+	//Are we playing competitive?
+	bool IsMatchTypeCompetitive()
+	{
+		typedef bool(__thiscall* IsCompetitiveFn)(void*);
+		static IsCompetitiveFn IsCompetitive = (IsCompetitiveFn)(gSignatures.FindPatternEx("client.dll", "55 8B EC 51 56 6A 00 8B F1 E8 ? ? ? ? 8B C8 E8 ? ? ? ? 84 C0 74 0B 8B 86 ? ? ? ? 89 45 FC EB 07 C7 45 ? ? ? ? ? 8D 45 FC 50 E8 ? ? ? ? 83 C4 04 5E 85 C0 74 0B 83 78 28 02"));
+		return IsCompetitive(this);
+	}
+
+	//Is PVE mode active ? (When fighting boss like merasmus/monoculus and you cant kill other players)
+	bool IsPVEModeActive()
+	{
+		return *(bool*)(this + 1051);
+	}
+
+};
+
+enum AttributeIDs
+{
+	//Apply these for australium item
+	AT_is_australium_item = 2027,
+	AT_loot_rarity = 2022,
+	AT_item_style_override = 542,
+
+	//This one and item style override 0 to golden pan
+	AT_ancient_powers = 150,
+
+	AT_uses_stattrack_module = 719,
+
+	AT_is_festive = 2053,
+
+	//Only ks sheen is visible
+	AT_sheen = 2014,
+
+	AT_unusual_effect = 134,
+	AT_particle_effect = 370,
+
+	AT_weapon_allow_inspect = 731,
+};
+
+enum WeaponEffects
+{
+	WE_hot = 701,
+	WE_isotope = 702,
+	WE_cool = 703,
+	WE_energyorb = 704,
+};
+
 
 class EngineClient
 {
@@ -1539,9 +1697,8 @@ public:
 	CGlobals* gGlobals;
 	ICvar* Cvar;
 	IEngineTrace* EngineTrace;
-
+	C_TFGameRules* pGameRules;
 };
 
 extern CInterfaces gInts;
 extern CPlayerVariables gPlayerVars;
-extern COffsets gOffsets;

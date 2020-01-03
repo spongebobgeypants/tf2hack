@@ -7,6 +7,8 @@ namespace g // same as in stickrpg. sue me.
 	extern CUserCmd* g_UserCmd;
 	extern bool b_MenuEnable;
 	extern int i_MenuTab;
+	extern int iCreateMoveOffset, iPaintTraverseOffset, iFrameStageNotifyOffset;
+
 
 }
 
@@ -20,6 +22,7 @@ namespace gMenu
 		extern bool Enable;
 		extern int  TargetSelection;
 		extern int  FOV;
+		extern bool  Triggerbot;
 		extern int  Smooth;
 		extern int  LockMethord;
 		extern bool pSilent;
@@ -56,6 +59,7 @@ namespace gMenu
 	namespace Miscellaneous
 	{
 		extern bool Enable;
+		extern bool Australium;
 		extern bool BypassPure;
 		extern int OptimizeNetworking;
 

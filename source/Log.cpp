@@ -4,10 +4,12 @@
 char g_logFile[MAX_PATH];
 char g_debugLogFile[MAX_PATH];
 
-void Log::Init(HMODULE hModule) {
+void Log::Init(HMODULE hModule) 
+{
 	memset(g_logFile, 0, sizeof(g_logFile));
 
-	if (GetModuleFileNameA(hModule, g_logFile, MAX_PATH) != 0) {
+	if (GetModuleFileNameA(hModule, g_logFile, MAX_PATH) != 0) 
+	{
 		size_t slash = -1;
 
 		for (size_t i = 0; i < strlen(g_logFile); i++) {
@@ -16,19 +18,22 @@ void Log::Init(HMODULE hModule) {
 			}
 		}
 
-		if (slash != -1) {
+		if (slash != -1)
+		{
 			g_logFile[slash + 1] = '\0';
 			strcpy_s(g_debugLogFile, g_logFile);
 			strcat_s(g_debugLogFile, "debug.log");
 			strcat_s(g_logFile, "hook.log");
 		}
-		else {
+		else 
+		{
 			// Shitty manual mapper detected.
 			MessageBoxA(NULL, "Unable to parse target module path", "ERROR", MB_OK);
 			ExitProcess(0);
 		}
 	}
-	else {
+	else 
+	{
 		// Shitty manual mapper detected.
 		MessageBoxA(NULL, "GetModuleFileNameA failed", "ERROR", MB_OK);
 		ExitProcess(0);
@@ -59,7 +64,8 @@ void Log::Debug(const char* fmt, ...)
 	}
 }
 
-void Log::Msg(const char* fmt, ...) {
+void Log::Msg(const char* fmt, ...) 
+{
 	va_list va_alist;
 	char szLogbuf[4096];
 	char szParameters[4066];
@@ -82,7 +88,8 @@ void Log::Msg(const char* fmt, ...) {
 	}
 }
 
-void Log::Error(const char* fmt, ...) {
+void Log::Error(const char* fmt, ...) 
+{
 	va_list va_alist;
 	char szLogbuf[4096];
 	char szParameters[4066];
@@ -107,7 +114,8 @@ void Log::Error(const char* fmt, ...) {
 	MessageBoxA(NULL, szLogbuf, "ERROR", MB_ICONERROR);
 }
 
-void Log::Fatal(const char* fmt, ...) {
+void Log::Fatal(const char* fmt, ...) 
+{
 	va_list va_alist;
 	char szLogbuf[4096];
 	char szParameters[4066];

@@ -43,6 +43,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -96,6 +97,7 @@
     <ClCompile Include="CMiscellaneous.cpp" />
     <ClCompile Include="CNetvarManager.cpp" />
     <ClCompile Include="ConVar.cpp" />
+    <ClCompile Include="CSkinchanger.cpp" />
     <ClCompile Include="CVisuals.cpp" />
     <ClCompile Include="DLLMain.cpp" />
     <ClCompile Include="EndScene.cpp" />
@@ -125,6 +127,8 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="ConVar.h" />
     <ClInclude Include="CRecV.h" />
+    <ClInclude Include="CSkinchanger.h" />
+    <ClInclude Include="CUtlVector.h" />
     <ClInclude Include="CVisuals.h" />
     <ClInclude Include="EndScene.h" />
     <ClInclude Include="Font.h" />

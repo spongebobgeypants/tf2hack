@@ -25,5 +25,6 @@ namespace gAim
 	namespace AimAssist
 	{
 		// Add it yourself lol
+		void Triggerbot();
 	}
 }

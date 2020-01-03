@@ -14,7 +14,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 HRESULT STDMETHODCALLTYPE hkEndScene(IDirect3DDevice9* vDevice)
 {
 	
-
+	
 	if (!initImgui)
 	{
 

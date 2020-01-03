@@ -89,7 +89,7 @@ void gAim::LagCompensation::OnCreateMove()
 	{
 		auto pPlayerEntity = GetBaseEntity(i); // cool macro
 
-		if (pPlayerEntity == NULL || g::g_LocalPlayer == NULL || pPlayerEntity == g::g_LocalPlayer || pPlayerEntity->IsDormant() || pPlayerEntity->GetHealth() <= 0)
+		if (pPlayerEntity == NULL || g::g_LocalPlayer == NULL || pPlayerEntity == g::g_LocalPlayer || pPlayerEntity->IsDormant() || pPlayerEntity->GetHealth() <= 0 /*|| gInts.pGameRules->IsPVEModeActive()*/)
 		{
 			continue;
 		}
@@ -127,8 +127,6 @@ void gAim::LagCompensation::OnCreateMove()
 			{
 				tempFloat = tempFOVDistance;
 				bestTargetSimTime = BacktrackData[bestTargetIndex][t].m_flSimulationTime; 
-				
-			
 			}
 		}
 

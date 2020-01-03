@@ -7,6 +7,8 @@ namespace g
 	CUserCmd* g_UserCmd = nullptr;
 	bool b_MenuEnable = false;
 	int i_MenuTab = 0;
+	int iCreateMoveOffset = 21, iPaintTraverseOffset = 41, iFrameStageNotifyOffset = 35;
+
 }
 
 namespace gMenu
@@ -20,6 +22,7 @@ namespace gMenu
 		int  LockMethord;
 		bool pSilent;
 		int  FOV;
+		bool  Triggerbot;
 		int  Smooth;
 		int  Mode;
 		int  Hitbox;
@@ -54,6 +57,6 @@ namespace gMenu
 		bool Enable;
 		bool BypassPure;
 		int OptimizeNetworking;
-
+		bool Australium;
 	}
 }

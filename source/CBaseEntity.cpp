@@ -1,9 +1,14 @@
 #include "SDK.h"
-#include "CNetvarManager.h"
 #include "Math.h"
 #include "CDrawManager.h"
 
 // most of this was pasted from potassium. thanks stick
+
+CBaseCombatWeapon* CBaseEntity::GetActiveWeapon()
+{
+	NETVAR(pHandle, DWORD, "DT_BaseCombatCharacter", "m_hActiveWeapon");
+	return (CBaseCombatWeapon *)gInts.EntList->GetClientEntityFromHandle(pHandle.GetValue(this));
+}
 
 Vector CBaseEntity::GetCollideableMins()
 {
@@ -13,6 +18,12 @@ Vector CBaseEntity::GetCollideableMins()
 Vector CBaseEntity::GetCollideableMaxs()
 {
 	NETVAR_RETURN(Vector, this, "DT_BaseEntity", "m_Collision", "m_vecMaxs");
+}
+
+int &CBaseEntity::GetTickBase()
+{
+	static int m_nTickBase = gNetvars->GetOffset("DT_BasePlayer", "localdata", "m_nTickBase");
+	return *reinterpret_cast<int*>(uintptr_t(this) + m_nTickBase);
 }
 
 Vector CBaseEntity::GetEyePosition()
@@ -25,15 +36,6 @@ Vector CBaseEntity::GetOrigin()
 	NETVAR_RETURN(Vector, this, "DT_BaseEntity", "m_vecOrigin");
 }
 
-float CBaseEntity::GetUberChargeLevel()
-{
-	NETVAR_RETURN(float, this, "DT_WeaponMedigun", "NonLocalTFWeaponMedigunData", "m_flChargeLevel"); // not sure if this is the netvar for ubercharge
-}
-
-float CBaseEntity::GetSniperRifleChargeDamage()
-{
-	NETVAR_RETURN(float, this, "DT_TFSniperRifle", "SniperRifleLocalData", "m_flChargedDamage"); 
-}
 int CBaseEntity::GetHealth()
 {
 	NETVAR_RETURN(int, this, "DT_BasePlayer", "m_iHealth");
@@ -119,11 +121,6 @@ bool &CBaseEntity::GlowEnabled()
 	return *reinterpret_cast<bool*>(uintptr_t(this) + m_bGlowEnabled);
 }
 
-void CBaseEntity::SetGlow(bool value)
-{
-	static int m_bGlowEnabled = gNetvars->GetOffset("DT_TFPlayer", "m_bGlowEnabled");
-	*reinterpret_cast<bool*>(reinterpret_cast<uintptr_t>(this) + m_bGlowEnabled) = value;
-}
 
 void CBaseEntity::SetAbsOrigin(const Vector &v) 
 {

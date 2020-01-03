@@ -65,9 +65,8 @@ void Visuals()
 void Miscellaneous()
 {
 	ImGui::Checkbox("Bypass sv_pure", &gMenu::Miscellaneous::BypassPure);
-	ImGui::Text("Networking optimization");
-	ImGui::Separator();
-	ImGui::Text("Optimization mode"); ImGui::SameLine(); ImGui::Combo("##Type", &gMenu::Miscellaneous::OptimizeNetworking, OMode, ARRAYSIZE(OMode));
+	ImGui::Checkbox("Force australiums", &gMenu::Miscellaneous::Australium);
+
 
 }
 

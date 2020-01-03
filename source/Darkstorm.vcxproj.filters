@@ -73,6 +73,9 @@
     <ClCompile Include="ConVar.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="CSkinchanger.cpp">
+      <Filter>Source\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDrawManager.h">
@@ -187,6 +190,12 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="ConVar.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CSkinchanger.h">
+      <Filter>Headers\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="CUtlVector.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
