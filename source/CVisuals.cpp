@@ -55,6 +55,8 @@ Color clrDynamic(CBaseEntity* pPlayerEntity)
 Color clrDynamicHealthColor(CBaseEntity* pPlayerEntity)
 {
 
+	// could add like a gradient thing
+	// nah, hardcode 4 life
 	if (pPlayerEntity->GetHealth() > 51 && pPlayerEntity->GetHealth() <= pPlayerEntity->GetMaxHealth())
 	{
 		return Color::Green();
