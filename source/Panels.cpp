@@ -7,37 +7,35 @@
 #include "CVisuals.h"
 
 CScreenSize gScreenSize;
-std::unique_ptr<VMTHook> panelHook;
-typedef void(__thiscall* PaintTraverse_t) (PVOID, unsigned int, bool, bool);
+
+PaintTraverse_t oPaintTraverse = nullptr;
 
 //===================================================================================
 void __fastcall Hooked_PaintTraverse( PVOID pPanels, int edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce )
 {
-	static auto oPaintTraverse = panelHook->GetOriginal<PaintTraverse_t>(41);
-
+	
 	if (!strcmp("HudScope", gInts.Panels->GetName(vguiPanel)) && gMenu::Visuals::RemoveScope) // Remove scope.
 	{
 		return;
 	}
 
 	oPaintTraverse(pPanels, vguiPanel, forceRepaint, allowForce);
-	static unsigned int vguiMatSystemTopPanel;
+	static unsigned int vguiFocusOverlayPanel;
 
-
-	if (vguiMatSystemTopPanel == NULL)
-	{
+	if (vguiFocusOverlayPanel == NULL)
+	{											//FocusOverlayPanel
 		const char* szName = gInts.Panels->GetName(vguiPanel);
-		if (szName[0] == 'M' && szName[3] == 'S') //Look for MatSystemTopPanel without using slow operations like strcmp or strstr.
+		if (szName[0] == 'F' && szName[5] == 'O' &&  szName[12] == 'P')
 		{
-			vguiMatSystemTopPanel = vguiPanel;
+			vguiFocusOverlayPanel = vguiPanel;
 			Intro();
 		}
 	}
 
-	if (vguiMatSystemTopPanel == vguiPanel) //If we're on MatSystemTopPanel, call our drawing code.
-	{
 
-		if (gInts.Engine->IsDrawingLoadingImage() || !gInts.Engine->IsInGame() || !gInts.Engine->IsConnected() || gInts.Engine->Con_IsVisible() || ((GetAsyncKeyState(VK_F12) || gInts.Engine->IsTakingScreenshot())))
+	if (vguiFocusOverlayPanel == vguiPanel)
+	{
+		if (gInts.Engine->IsDrawingLoadingImage() || !gInts.Engine->IsInGame() || !gInts.Engine->IsConnected() || gInts.Engine->Con_IsVisible() || gInts.Engine->IsTakingScreenshot())
 		{
 			return; //We don't want to draw at the menu.
 		}
@@ -49,6 +47,8 @@ void __fastcall Hooked_PaintTraverse( PVOID pPanels, int edx, unsigned int vguiP
 
 		gVisuals::Do(pBaseLocalEnt);
 		gMiscellaneous::BypassPure();
+
+		gInts.Panels->SetMouseInputEnabled(vguiPanel, g::b_MenuEnable);
 	}
 
 }

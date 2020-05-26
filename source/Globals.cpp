@@ -8,7 +8,7 @@ namespace g
 	bool b_MenuEnable = false;
 	int i_MenuTab = 0;
 	int iCreateMoveOffset = 21, iPaintTraverseOffset = 41, iFrameStageNotifyOffset = 35;
-
+	bool* bSendPacket;
 }
 
 namespace gMenu

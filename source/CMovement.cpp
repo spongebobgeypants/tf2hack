@@ -4,7 +4,7 @@
 
 void gMovement::OnCreateMove()
 {
-	if (!gMenu::Movement::Enable || !gInts.Engine->IsInGame() || !gInts.Engine->IsConnected())
+	if (!gInts.Engine->IsInGame() || !gInts.Engine->IsConnected())
 	{
 		return;
 	}

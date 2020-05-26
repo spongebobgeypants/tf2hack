@@ -2,16 +2,11 @@
 #include "Globals.h"
 #include "Math.h"
 #include <string>
-#include "CAim.h"
 #include <time.h>
 
 void gVisuals::Do(CBaseEntity* pLocal)
 {
-	if (!gMenu::Visuals::Enable)
-	{
-		return;
-	}
-
+	
 	for (int i = 1; i <= gInts.Engine->GetMaxClients(); i++)
 	{
 		if (i == me)
@@ -54,18 +49,21 @@ Color clrDynamic(CBaseEntity* pPlayerEntity)
 
 Color clrDynamicHealthColor(CBaseEntity* pPlayerEntity)
 {
+	auto iMaxHealth = pPlayerEntity->GetMaxHealth();
+	auto iHalfHealth = iMaxHealth / 2;
+	auto iThirdOfHealth = iHalfHealth / 2;
 
 	// could add like a gradient thing
 	// nah, hardcode 4 life
-	if (pPlayerEntity->GetHealth() > 51 && pPlayerEntity->GetHealth() <= pPlayerEntity->GetMaxHealth())
+	if (pPlayerEntity->GetHealth() > iHalfHealth && pPlayerEntity->GetHealth() <= iMaxHealth)
 	{
 		return Color::Green();
 	}
-	else if (pPlayerEntity->GetHealth() > 21 && pPlayerEntity->GetHealth() <= 50)
+	else if (pPlayerEntity->GetHealth() > iThirdOfHealth && pPlayerEntity->GetHealth() <= iHalfHealth)
 	{
 		return Color::Yellow();
 	}
-	else if (pPlayerEntity->GetHealth() > 0 && pPlayerEntity->GetHealth() <= 20)
+	else if (pPlayerEntity->GetHealth() > 0 && pPlayerEntity->GetHealth() <= iThirdOfHealth)
 	{
 		return Color::Red();
 	}
@@ -187,45 +185,49 @@ void gVisuals::RunPlayerVisuals(CBaseEntity* pPlayerEntity)
 	{
 		// renders if enemy has conditions like uber ( and if theyre a medic, how much % ), cloaked, scoped, bonked etc.
 		// a player can have multiple conditions thats why we will render all of the active ones. i didnt do this in absence.
-		// we could do it with an std::vector then push_back and sort elements.
-		// for example, if enemy is zoomed only, it will be drawn on the bottom. if its done with a vector, this could be fixed.
-		// i dont really care tho.
 
-		auto iCond = pPlayerEntity->GetCond();
-		auto iClass = pPlayerEntity->GetClassNum();
-		auto iUbercharge = pPlayerEntity->GetActiveWeapon()->GetUberChargeLevel();
+		std::vector<const wchar_t*> GetConditions = { };
+
+		int iCond = pPlayerEntity->GetCond();
+		int iClass = pPlayerEntity->GetClassNum();
+		int iUbercharge = pPlayerEntity->GetActiveWeapon()->GetUberChargeLevel();
+		int iEntIndex = pPlayerEntity->GetIndex();
+
 		std::string strUber = "Ubercharge: " + std::to_string((iUbercharge * 100)) + "%"; // Hopefully it prints "Ubercharge x %)
 
 		if (iCond & TFCond_Ubercharged) // ubercharge is the first one to get drawn because i think its the most important one
 		{
-			gDrawManager.DrawString(x + w + 2, y + iY, clrBoneCol, Font::Get().Name, L"Ubercharged"); // using the function that takes a wchar as an argument. basically i want to minimize memory leaks
-			iY += gDrawManager.GetESPHeight();
+			GetConditions.push_back(L"Ubercharged");
+			//gDrawManager.DrawString(x + w + 2, y + iY, clrBoneCol, Font::Get().Name, L"Ubercharged"); // using the function that takes a wchar as an argument. basically i want to minimize memory leaks
+			//iY += gDrawManager.GetESPHeight();
 		}
 		if (iCond & TFCond_Cloaked) // cloaked.
 		{
-			gDrawManager.DrawString(x + w + 2, y + iY + 2, clrBoneCol, Font::Get().ESP, L"Cloaked");
-			iY += gDrawManager.GetESPHeight();
+			GetConditions.push_back(L"Cloaked");
+			//gDrawManager.DrawString(x + w + 2, y + iY + 2, clrBoneCol, Font::Get().ESP, L"Cloaked");
+			//iY += gDrawManager.GetESPHeight();
 		}
 		if (iCond & TFCond_Bonked) // under the effect of BONK
 		{ 
-			gDrawManager.DrawString(x + w + 2, y + iY + 4, clrBoneCol, Font::Get().ESP, L"Bonked");
-			iY += gDrawManager.GetESPHeight();
+			GetConditions.push_back(L"Bonked");
+			//gDrawManager.DrawString(x + w + 2, y + iY + 4, clrBoneCol, Font::Get().ESP, L"Bonked");
+			//iY += gDrawManager.GetESPHeight();
 		}
 		if (iCond & TFCond_Zoomed)
 		{
-			gDrawManager.DrawString(x + w + 2, y + iY + 6, clrBoneCol, Font::Get().ESP, L"Zoomed");
-			iY += gDrawManager.GetESPHeight();
+			GetConditions.push_back(L"Zoomed");
+			//gDrawManager.DrawString(x + w + 2, y + iY + 6, clrBoneCol, Font::Get().ESP, L"Zoomed");
+			//iY += gDrawManager.GetESPHeight();
 		}
-		if (iClass == TF2_Medic) // i am aware that not only medic can ubercharge but i couldnt be bothered
+
+
+		for (int i = 0; i < GetConditions.size(); i++) //Loop through records.
 		{
-			if (iUbercharge > 0) // we dont wanna draw when enemy has no uber.
-			{
-				 //long story short this might work but i am doing it wrong. it should be weapon + netvar or something, not entity + netvar. oh well.
-			    //gDrawManager.DrawString(x + w + 2, y + iY + 8, clrBoneCol, Font::Get().Name, strUber.c_str());
-			   //iY += gDrawManager.GetESPHeight();
-			}
+			int off = 0;
+			gDrawManager.DrawString(x + w + 2, y + iY + off, clrBoneCol, Font::Get().Name, GetConditions.at(i));
+			iY += gDrawManager.GetESPHeight();
+			off += 2; //Double it after rendering.
 		}
-		
 	}
 
 	if (gMenu::Visuals::Skeleton)
@@ -246,42 +248,7 @@ void gVisuals::RunPlayerVisuals(CBaseEntity* pPlayerEntity)
 	}
 }
 
-void gVisuals::ShowSniperDamage()
-{
 
-	// again, this might work if done properly.
-
-
-	if (!gMenu::Visuals::ShowSniperChargeDamage)
-	{
-		return;
-	}
-	
-	auto iSniperDamage = g::g_LocalPlayer->GetActiveWeapon()->GetSniperRifleChargeDamage();
-
-	Color clrDamage = Color(255, 255, 255, 255);
-
-	if (iSniperDamage > 125)
-	{
-		clrDamage = Color::Red();
-	}
-
-	if (g::g_LocalPlayer->GetCond() & TFCond_Zoomed) // only do it if we are zoomed
-	{
-		int iScreenX, iScreenY;
-		gInts.Engine->GetScreenSize(iScreenX, iScreenY);
-
-		// Getting the middle of the screen
-		iScreenX = iScreenX / 2;
-		iScreenY = iScreenY / 2;
-
-		auto iFinalDamageHead = 150 + iSniperDamage; // scoped headshots do 150 damage.
-		auto iFinalDamageBody = iSniperDamage;
-		
-
-		gDrawManager.DrawString(iScreenX - 3, iScreenY + 3, clrDamage, Font::Get().ESP, "%d", iSniperDamage); // draw how much damage we can do.
-	}
-}
 
 
 void gVisuals::DoGlow(CBaseEntity* pPlayerEntity)
@@ -294,10 +261,14 @@ void gVisuals::DoGlow(CBaseEntity* pPlayerEntity)
  		return;
 	}
 
+	//Fool proof garbage.
+	//static auto* glow_outline_effect_enable = gInts.Cvar->FindVar("glow_outline_effect_enable");
+	//if (glow_outline_effect_enable->GetInt() != 1)
+		//glow_outline_effect_enable->SetValue(1);
+	
 	pPlayerEntity->UpdateGlowEffect();
 	pPlayerEntity->GlowEnabled() = true;
-
-	//sometimes works, sometimes doesnt. just tf2 issue because it happens in pastebox too ( lmaopaste )
+	//if it doesnt work, make sure you are playing on dx9 and have glow outlines enabled in settings.
 }
 
 void gVisuals::DoSkeleton(CBaseEntity* pPlayerEntity)
@@ -320,34 +291,6 @@ void gVisuals::DoSkeleton(CBaseEntity* pPlayerEntity)
 }
 
 
-void gVisuals::DrawBacktrackSkeleton(CBaseEntity* pEntity, int* iBones, int count, Color clrCol)
-{
-	if (!gMenu::Aim::Backtracking)
-	{
-		return; 
-	}
-
-	//i had an idea for this but never went through with it.
-	for (int i = 0; i < count; i++)
-	{
-		if (i == count - 1)
-			continue;
-
-		for (int t = 0; t <= 12; t++) // loop through all ticks.
-		{
-			Vector vBone1 = pEntity->GetHitboxPosition(iBones[i]);
-			Vector vBone2 = pEntity->GetHitboxPosition(iBones[i + 1]);
-
-			Vector vScr1, vScr2;
-
-			if (!gDrawManager.WorldToScreen(vBone1, vScr1) || !gDrawManager.WorldToScreen(vBone2, vScr2))
-				continue;
-
-			gDrawManager.DrawLine(vScr1.x, vScr1.y, vScr2.x, vScr2.y, clrCol);
-		}
-		
-	}
-}
 
 void gVisuals::DrawBone(CBaseEntity* pEntity, int* iBones, int count, Color clrCol)
 {

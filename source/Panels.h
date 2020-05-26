@@ -8,7 +8,8 @@ typedef struct CScreenSize_t
 
 } CScreenSize;
 
-extern std::unique_ptr<VMTHook> panelHook;
+typedef void(__thiscall* PaintTraverse_t) (PVOID, unsigned int, bool, bool); 
+extern PaintTraverse_t oPaintTraverse;
 void __fastcall Hooked_PaintTraverse(PVOID pPanels, int edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
 void Intro();
 

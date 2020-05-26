@@ -3,10 +3,11 @@
 #include "CMiscellaneous.h"
 #include "Vector.h"
 
+
 #define TICK_INTERVAL			(gInts.gGlobals->interval_per_tick)
 #define TIME_TO_TICKS( dt )		( (int)( 0.5f + (float)(dt) / TICK_INTERVAL ) )
+std::deque<StoredData> gAim::LagCompensation::GetPlayerStoredData[64];
 StoredData BacktrackData[64][12];
-
 // i know i know.
 inline float DistancePointToLine(Vector Point, Vector LineOrigin, Vector Dir)
 {
@@ -20,44 +21,7 @@ inline float DistancePointToLine(Vector Point, Vector LineOrigin, Vector Dir)
 
 	return (Point - PerpendicularPoint).Length();
 }
-Vector CalculateAngle(Vector src, Vector dst)
-{
-	Vector AimAngles, delta;
-	float hyp;
-	delta = src - dst;
-	hyp = sqrtf((delta.x * delta.x) + (delta.y * delta.y)); //SUPER SECRET IMPROVEMENT CODE NAME DONUT STEEL
-	AimAngles.x = atanf(delta.z / hyp) * RADPI;
-	AimAngles.y = atanf(delta.y / delta.x) * RADPI;
-	AimAngles.z = 0.0f;
-	if (delta.x >= 0.0)
-		AimAngles.y += 180.0f;
-	return AimAngles;
-}
-void MakeVector(Vector angle, Vector& vector)
-{
-	float pitch, yaw, tmp;
-	pitch = float(angle[0] * PI / 180);
-	yaw = float(angle[1] * PI / 180);
-	tmp = float(cos(pitch));
-	vector[0] = float(-tmp * -cos(yaw));
-	vector[1] = float(sin(yaw)*tmp);
-	vector[2] = float(-sin(pitch));
-}
-float GetFOV(Vector angle, Vector src, Vector dst)
-{
-	Vector ang, aim;
-	float mag, u_dot_v;
-	ang = CalculateAngle(src, dst);
 
-
-	MakeVector(angle, aim);
-	MakeVector(ang, ang);
-
-	mag = sqrtf(pow(aim.x, 2) + pow(aim.y, 2) + pow(aim.z, 2));
-	u_dot_v = aim.Dot(ang);
-
-	return RAD2DEG(acos(u_dot_v / (pow(mag, 2))));
-}
 void AngleVectors(const Vector &angles, Vector& forward)
 {
 	float	sp, sy, cp, cy;
@@ -70,9 +34,11 @@ void AngleVectors(const Vector &angles, Vector& forward)
 	forward.z = -sp;
 }
 
+
+
 void gAim::LagCompensation::OnCreateMove()
 {
-	if (!gMenu::Aim::MasterSwitch || !gMenu::Aim::Backtracking)
+	if (!gMenu::Aim::Backtracking)
 	{
 		return;
 	}
@@ -89,7 +55,7 @@ void gAim::LagCompensation::OnCreateMove()
 	{
 		auto pPlayerEntity = GetBaseEntity(i); // cool macro
 
-		if (pPlayerEntity == NULL || g::g_LocalPlayer == NULL || pPlayerEntity == g::g_LocalPlayer || pPlayerEntity->IsDormant() || pPlayerEntity->GetHealth() <= 0 /*|| gInts.pGameRules->IsPVEModeActive()*/)
+		if (pPlayerEntity == NULL || g::g_LocalPlayer == NULL || pPlayerEntity == g::g_LocalPlayer || pPlayerEntity->IsDormant() || pPlayerEntity->GetHealth() <= 0) /*|| gInts.pGameRules->IsPVEModeActive()*/
 		{
 			continue;
 		}

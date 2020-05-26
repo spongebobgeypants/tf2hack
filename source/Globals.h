@@ -8,7 +8,7 @@ namespace g // same as in stickrpg. sue me.
 	extern bool b_MenuEnable;
 	extern int i_MenuTab;
 	extern int iCreateMoveOffset, iPaintTraverseOffset, iFrameStageNotifyOffset;
-
+	extern bool* bSendPacket;
 
 }
 

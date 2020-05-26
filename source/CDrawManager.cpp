@@ -5,10 +5,6 @@ CDrawManager gDrawManager;
 
 #define ESP_HEIGHT 14
 //===================================================================================
-
-
-
-
 void CDrawManager::Initialize( )
 {
 	if ( gInts.Surface == NULL )
@@ -36,26 +32,52 @@ void CDrawManager::DrawString(int x, int y, Color color, HFont font, const wchar
 	gInts.Surface->DrawPrintText( pszText, wcslen( pszText ) );
 }
 //===================================================================================
-void CDrawManager::DrawString(int x, int y, Color color, HFont font, const char *pszText, ...)
+
+//Thank you kolo.
+std::wstring CDrawManager::StringToWide(const std::string& text)
 {
-	if (!pszText)
+	std::wstring wide(text.length(), L' ');
+	std::copy(text.begin(), text.end(), wide.begin());
+
+	return wide;
+}
+
+int CDrawManager::GetWidth(unsigned long font, const char* input)
+{
+	INT iWide = 0;
+	INT iTall = 0;
+	INT iBufSize = MultiByteToWideChar(CP_UTF8, 0x0, input, -1, NULL, 0);
+
+	wchar_t* pszUnicode = new wchar_t[iBufSize];
+
+	MultiByteToWideChar(CP_UTF8, 0x0, input, -1, pszUnicode, iBufSize);
+
+	gInts.Surface->GetTextSize(font, pszUnicode, iWide, iTall);
+
+	delete[] pszUnicode;
+
+	return iWide;
+}
+
+void CDrawManager::DrawStringA(unsigned long font, bool center, int x, int y, int r, int g, int b, int a, const char *input, ...)
+{
+	CHAR szBuffer[MAX_PATH];
+
+	if (!input)
 		return;
 
-	va_list va_alist;
-	char szBuffer[1024] = { '\0' };
-	wchar_t szString[1024] = { '\0' };
+	vsprintf(szBuffer, input, (char*)&input + _INTSIZEOF(input));
 
-	va_start(va_alist, pszText);
-	vsprintf_s(szBuffer, pszText, va_alist);
-	va_end(va_alist);
+	if (center)
+		x -= GetWidth(font, szBuffer) / 2;
 
-	wsprintfW(szString, L"%S", szBuffer);
-
-	gInts.Surface->DrawSetTextPos( x, y );
+	gInts.Surface->DrawSetTextColor(r, g, b, a);
 	gInts.Surface->DrawSetTextFont(font);
-	gInts.Surface->DrawSetTextColor(color.r(), color.g(), color.b(), color.a());
-	gInts.Surface->DrawPrintText( szString, wcslen( szString ) );
+	gInts.Surface->DrawSetTextPos(x, y);
+	std::wstring wide = StringToWide(std::string(szBuffer));
+	gInts.Surface->DrawPrintText(wide.c_str(), wide.length());
 }
+
 //===================================================================================
 void CDrawManager::DrawT(int X, int Y, Color Color, HFont Font, bool Center, const char* _Input, ...)
 {
@@ -116,20 +138,7 @@ void CDrawManager::DrawBox( Vector vOrigin, int r, int g, int b, int alpha, int 
 	DrawRect( vScreen.x + radius, vScreen.y - radius, box_width, radius2 + box_width, COLORCODE( r, g, b, alpha ) );
 }
 //===================================================================================
-bool CDrawManager::WorldToScreen( Vector &vOrigin, Vector &vScreen )
+bool CDrawManager::WorldToScreen(const Vector &vOrigin, Vector &vScreen)
 {
-	const matrix3x4& worldToScreen = gInts.Engine->WorldToScreenMatrix(); //Grab the world to screen matrix from CEngineClient::WorldToScreenMatrix
-
-	float w = worldToScreen[3][0] * vOrigin[0] + worldToScreen[3][1] * vOrigin[1] + worldToScreen[3][2] * vOrigin[2] + worldToScreen[3][3]; //Calculate the angle in compareson to the player's camera.
-	vScreen.z = 0; //Screen doesn't have a 3rd dimension.
-
-	if( w > 0.001 ) //If the object is within view.
-	{
-		float fl1DBw = 1 / w; //Divide 1 by the angle.
-		vScreen.x = (gScreenSize.iScreenWidth / 2) + ( 0.5 * ((worldToScreen[0][0] * vOrigin[0] + worldToScreen[0][1] * vOrigin[1] + worldToScreen[0][2] * vOrigin[2] + worldToScreen[0][3]) * fl1DBw) * gScreenSize.iScreenWidth + 0.5); //Get the X dimension and push it in to the Vector.
-		vScreen.y = (gScreenSize.iScreenHeight / 2) - ( 0.5 * ((worldToScreen[1][0] * vOrigin[0] + worldToScreen[1][1] * vOrigin[1] + worldToScreen[1][2] * vOrigin[2] + worldToScreen[1][3]) * fl1DBw) * gScreenSize.iScreenHeight + 0.5); //Get the Y dimension and push it in to the Vector.
-		return true;
-	}
-
-	return false;
+	return (gInts.DebugOverlay->ScreenPosition(vOrigin, vScreen) != 1);
 }

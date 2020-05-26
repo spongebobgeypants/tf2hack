@@ -22,43 +22,21 @@ HRESULT STDMETHODCALLTYPE hkEndScene(IDirect3DDevice9* vDevice)
 		ImGui_ImplDX9_Init(hWindow, vDevice);
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.Fonts->AddFontDefault();
-
-		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		ImFontConfig icons_config;
-		icons_config.MergeMode = true;
-
-		io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_data, FontAwesome_size, 13.0f, &icons_config, icons_ranges);
-
 		ImGuiStyle& style = ImGui::GetStyle();
-
-		
-
-		style.WindowPadding = ImVec2(10, 10);
-		style.WindowRounding = 0.0f;
-		style.FramePadding = ImVec2(5, 5);
-		style.FrameRounding = 0.0f;
-		style.ItemSpacing = ImVec2(5, 5);
-		style.ItemInnerSpacing = ImVec2(8, 6);
-		style.IndentSpacing = 25.0f;
-		style.ScrollbarSize = 15.0f;
-		style.ScrollbarRounding = 9.0f;
-		style.GrabMinSize = 5.0f;
-		style.GrabRounding = 3.0f;
 
 		style.Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
 		style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
 		style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
 		style.Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_Border] = ImVec4(0.3f, 0.3f, 0.3f, 1);
+		style.Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
 		style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
-		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
@@ -71,8 +49,8 @@ HRESULT STDMETHODCALLTYPE hkEndScene(IDirect3DDevice9* vDevice)
 		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style.Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 		style.Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style.Colors[ImGuiCol_ColumnHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
 		style.Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
@@ -86,25 +64,33 @@ HRESULT STDMETHODCALLTYPE hkEndScene(IDirect3DDevice9* vDevice)
 		style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
 		style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 
+		style.Alpha = 1.f;
+		style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
+		style.FramePadding = ImVec2(4, 1);
+		style.ItemSpacing = ImVec2(6, 3);
+		style.ItemInnerSpacing = ImVec2(6, 4);
+		style.WindowRounding = 0.0f;
+		style.FrameRounding = 0.0f;
+		style.ColumnsMinSpacing = 50.0f;
+		style.GrabMinSize = 5.0f;
+		style.GrabRounding = 6.0f;
+		style.ScrollbarSize = 10.0f;
+		style.ScrollbarRounding = 0.0f;
+		style.AntiAliasedLines = true;
+
+		ImGui_ImplDX9_CreateDeviceObjects();
+
 		initImgui = true;
 	}
 
-	if (GetKeyState(VK_INSERT))
-		g::b_MenuEnable = true;
-	else
-	    g::b_MenuEnable = false;
-
 	ImGui_ImplDX9_NewFrame();
-
-	
 
 	if (g::b_MenuEnable)
 	{
-		ImGui::GetIO().MouseDrawCursor;
-		menu->Draw();
+		//ImGui::GetIO().MouseDrawCursor;
+		menu->DrawMenuInterface();
 	}
 
-	
 	ImGui::Render();
 
 	return oEndScene(vDevice);

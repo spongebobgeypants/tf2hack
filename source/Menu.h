@@ -4,5 +4,6 @@
 class CMenu
 {
 public:
+	void DrawMenuInterface();
 	void Draw();
 };

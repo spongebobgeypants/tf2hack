@@ -19,15 +19,10 @@ void gSkinchanger::Run(ClientFrameStage_t stage)
 	{
 		return; 
 	}
+
 	
 	auto list = g::g_LocalPlayer->GetActiveWeapon()->GetAttributeList();
-	auto weapon = g::g_LocalPlayer->GetActiveWeapon();
-	int* id = weapon->GetItemDefinitionIndex();
-
-	if (!weapon)
-	{
-		return;
-	}
+	int* id = g::g_LocalPlayer->GetActiveWeapon()->GetItemDefinitionIndex();
 
 	if (!list || list->m_Attributes.Count() == 0)
 	{

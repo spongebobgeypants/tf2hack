@@ -34,7 +34,9 @@ public:
 	void Initialize( );
 	void DrawLine(int x, int y, int x1, int y1, Color clrColor);
 	void DrawString(int x, int y, Color color, HFont font, const wchar_t * pszText);
-	void DrawString(int x, int y, Color color, HFont font, const char * pszText, ...);
+	std::wstring StringToWide(const std::string & text);
+	int GetWidth(unsigned long font, const char * input);
+	void DrawStringA(unsigned long font, bool center, int x, int y, int r, int g, int b, int a, const char * input, ...);
 	void DrawT(int X, int Y, Color Color, HFont Font, bool Center, const char * _Input, ...);
 	byte GetESPHeight( );
 	void DrawRect(int x, int y, int w, int h, Color clrColor);
@@ -42,7 +44,7 @@ public:
 	int GetPixelTextSize ( const char *pszText );
 	int GetPixelTextSize ( wchar_t *pszText );
 	void DrawBox( Vector vOrigin, int r, int g, int b, int alpha, int box_width, int radius );
-	bool WorldToScreen( Vector &vOrigin, Vector &vScreen );
+	bool WorldToScreen(const Vector &vOrigin, Vector &vScreen);
 	DWORD dwGetTeamColor( int iIndex )
 	{
 		static DWORD dwColors[] = { 0, //Dummy

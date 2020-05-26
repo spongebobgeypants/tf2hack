@@ -25,6 +25,7 @@
 #include "CSignature.h"
 #include "CUtlVector.h"
 #include "CNetvarManager.h"
+#include "minhook/minhook.h"
 
 using namespace std;
 
@@ -286,6 +287,16 @@ public:
 	}
 };
 
+class CDebugOverlay
+{
+public:
+	bool ScreenPosition(const Vector& vIn, Vector& vOut)
+	{
+		typedef bool(__thiscall* OriginalFn)(PVOID, const Vector&, Vector&);
+		return getvfunc<OriginalFn>(this, 10)(this, vIn, vOut);
+	}
+};
+
 class CBaseCombatWeapon : public CBaseEntity, public CAttributeList
 {
 public:
@@ -337,7 +348,7 @@ public:
 	//Probably wrong.
 	CAttributeList* GetAttributeList()
 	{
-		NETVAR_RETURN(CAttributeList*, this, "DT_BasePlayer ", "m_AttributeList");
+		return *reinterpret_cast<CAttributeList**>(reinterpret_cast<std::uintptr_t>(this) + 0x9c0);
 	}
 
 	CAttribute* GetAttribute()
@@ -1696,6 +1707,7 @@ public:
 	IVModelInfo* ModelInfo;
 	CGlobals* gGlobals;
 	ICvar* Cvar;
+	CDebugOverlay* DebugOverlay;
 	IEngineTrace* EngineTrace;
 	C_TFGameRules* pGameRules;
 };
